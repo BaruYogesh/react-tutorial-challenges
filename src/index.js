@@ -62,7 +62,8 @@ class Game extends React.Component {
         }
       ],
       stepNumber: 0, //step count
-      xIsNext: true //used to decide to place X or O
+      xIsNext: true, //used to decide to place X or O
+      historyOrder: true //used for deciding which way to show history buttons
     };
   }
   //function is called every click. 
@@ -85,6 +86,7 @@ class Game extends React.Component {
       
       stepNumber: history.length, //change stepnumber
       xIsNext: !this.state.xIsNext //flip X to O or vice versa
+      
     });
   }
   //used to move through the steps of the game
@@ -95,12 +97,18 @@ class Game extends React.Component {
     });
   }
 
+  flipHistory() {
+    this.setState({
+      historyOrder: !this.state.historyOrder
+    });
+  }
+
   render() {
     const history = this.state.history; //history
     const current = history[this.state.stepNumber]; //current board obtained by getting the last index of history
     const winner = calculateWinner(current.squares); //pass the array of squares to winner, winner is boolean value.
 
-    const moves = history.map((step, move) => {
+    const moves = history.map((step, move) => {//function is called for count of move
       const desc = move ?
         'Go to move #' + move : //used if move != 0
         'Go to game start'; //first move.
@@ -118,6 +126,10 @@ class Game extends React.Component {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
 
+    if(!this.state.historyOrder){
+      moves.reverse();
+    }
+
     return (
       <div className="game">
         <div className="game-board">
@@ -127,6 +139,7 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
+          <button onClick={this.flipHistory.bind(this)}>flip</button>
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
