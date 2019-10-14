@@ -44,32 +44,60 @@ class Board extends React.Component {
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
-    );
-    
-    
+    );  
+  }
+
+  createBoard = () => {
+
+    let board = []
+
+      for(let i = 0;i<3;i++){
+        let j = i * 3;
+        board.push(
+        <div className="board-row">
+          {this.renderSquare(j)}
+          {this.renderSquare(j+1)}
+          {this.renderSquare(j+2)}
+        </div>
+        )
+        
+      
+
+        
+      }
+      return board
   }
 
   render() {
     //each square rendered separately
-    return (
-      <div> 
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+
+    return(
+      <div>
+        {this.createBoard()}
       </div>
+    )
+    /*
+    return(
+    <div> 
+      <div className="board-row">
+        {this.renderSquare(0)}
+        {this.renderSquare(1)}
+        {this.renderSquare(2)}
+      </div>
+      <div className="board-row">
+        {this.renderSquare(3)}
+        {this.renderSquare(4)}
+        {this.renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {this.renderSquare(6)}
+        {this.renderSquare(7)}
+        {this.renderSquare(8)}
+      </div>
+    </div>
     );
+    */
+    
   }
 }
 //this class is used to manage the entire game
