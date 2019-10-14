@@ -3,12 +3,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+const winStyle = {
+  color: 'blue'
+};
+
 //functional class declaration. used when the only method of the class is render()
 //props are properties of a component.
 function Square(props) {
   return (
     
-    <button className="square" onClick={props.onClick}>
+    <button className="square" onClick={props.onClick} style={props.style}>
       {props.value}
     </button>
   );
@@ -17,8 +21,23 @@ function Square(props) {
 //typical component. each component is written as:
 //class x extends Component {}
 class Board extends React.Component {
+  
   //this function is called in render() to render each square
   renderSquare(i) {
+    console.log(this.props.winner);
+    if(this.props.winner != null){
+      if(this.props.winner.includes(i)){
+        return (
+          <Square //tag refers to the square class ^
+            //value is either X or O. onClick() is an internal function. in this case it points to handleClick
+            value={this.props.squares[i]}
+            onClick={() => this.props.onClick(i)}
+            style={winStyle}
+          />
+        );
+      }
+    }
+    
     return (
       <Square //tag refers to the square class ^
         //value is either X or O. onClick() is an internal function. in this case it points to handleClick
@@ -26,6 +45,8 @@ class Board extends React.Component {
         onClick={() => this.props.onClick(i)}
       />
     );
+    
+    
   }
 
   render() {
@@ -107,7 +128,7 @@ class Game extends React.Component {
     const history = this.state.history; //history
     const current = history[this.state.stepNumber]; //current board obtained by getting the last index of history
     const winner = calculateWinner(current.squares); //pass the array of squares to winner, winner is boolean value.
-
+    
     const moves = history.map((step, move) => {//function is called for count of move
       const desc = move ?
         'Go to move #' + move : //used if move != 0
@@ -121,7 +142,7 @@ class Game extends React.Component {
 
     let status;
     if (winner) { //show next player unless the game is won.
-      status = "Winner: " + winner; 
+      status = "Winner: " + (this.state.xIsNext ? "O" : "X"); 
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
@@ -134,8 +155,9 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
+            winner={winner}
             squares={current.squares}
-            onClick={i => this.handleClick(i)}
+            onClick={i => this.handleClick(i)} //bind onClick to handleClick, pass i.
           />
         </div>
         <div className="game-info">
@@ -154,7 +176,7 @@ ReactDOM.render(<Game />, document.getElementById("root"));
 
 //this function is called on every click to determine if there is a winner
 function calculateWinner(squares) {
-  const lines = [
+  const lines = [ //possible winning combinations
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -164,10 +186,10 @@ function calculateWinner(squares) {
     [0, 4, 8],
     [2, 4, 6]
   ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
+  for (let i = 0; i < lines.length; i++) { //loop through combinations
+    const [a, b, c] = lines[i]; //a b c = winning indexes from combinations
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return lines[i];
     }
   }
   return null;
